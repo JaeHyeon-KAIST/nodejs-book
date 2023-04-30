@@ -1,4 +1,6 @@
-const { Post, Hashtag } = require('../models');
+const { Post, Hashtag } = require("../models");
+
+const { serverURL } = require("../config/serverURL");
 
 exports.afterUploadImage = (req, res) => {
   console.log(req.file);
@@ -15,15 +17,15 @@ exports.uploadPost = async (req, res, next) => {
     const hashtags = req.body.content.match(/#[^\s#]*/g);
     if (hashtags) {
       const result = await Promise.all(
-        hashtags.map(tag => {
+        hashtags.map((tag) => {
           return Hashtag.findOrCreate({
             where: { title: tag.slice(1).toLowerCase() },
-          })
-        }),
+          });
+        })
       );
-      await post.addHashtags(result.map(r => r[0]));
+      await post.addHashtags(result.map((r) => r[0]));
     }
-    res.redirect("https://jaehyeon.art/node-book/");
+    res.redirect(serverURL);
   } catch (error) {
     console.error(error);
     next(error);

@@ -1,13 +1,15 @@
-const bcrypt = require('bcrypt');
-const passport = require('passport');
-const User = require('../models/user');
+const bcrypt = require("bcrypt");
+const passport = require("passport");
+const User = require("../models/user");
+
+const { serverURL } = require("../config/serverURL");
 
 exports.join = async (req, res, next) => {
   const { email, nick, password } = req.body;
   try {
     const exUser = await User.findOne({ where: { email } });
     if (exUser) {
-      return res.redirect("https://jaehyeon.art/node-book/join?error=exist");
+      return res.redirect(`${serverURL}/join?error=exist`);
     }
     const hash = await bcrypt.hash(password, 12);
     await User.create({
@@ -15,34 +17,34 @@ exports.join = async (req, res, next) => {
       nick,
       password: hash,
     });
-    return res.redirect("https://jaehyeon.art/node-book/");
+    return res.redirect(serverURL);
   } catch (error) {
     console.error(error);
     return next(error);
   }
-}
+};
 
 exports.login = (req, res, next) => {
-  passport.authenticate('local', (authError, user, info) => {
+  passport.authenticate("local", (authError, user, info) => {
     if (authError) {
       console.error(authError);
       return next(authError);
     }
     if (!user) {
-      return res.redirect(`https://jaehyeon.art/node-book/?error=${info.message}`);
+      return res.redirect(`${serverURL}/?loginError=${info.message}`);
     }
     return req.login(user, (loginError) => {
       if (loginError) {
         console.error(loginError);
         return next(loginError);
       }
-      return res.redirect("https://jaehyeon.art/node-book/");
+      return res.redirect(serverURL);
     });
   })(req, res, next); // 미들웨어 내의 미들웨어에는 (req, res, next)를 붙입니다.
 };
 
 exports.logout = (req, res) => {
   req.logout(() => {
-    res.redirect("https://jaehyeon.art/node-book/");
+    res.redirect(serverURL);
   });
 };

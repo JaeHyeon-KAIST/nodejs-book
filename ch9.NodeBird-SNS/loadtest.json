@@ -1,0 +1,33 @@
+{
+  "config": {
+    "target": "https://jaehyeon.art/node-book/",
+    "http": {
+      "timeout": 30
+    },
+    "phases": [
+      {
+        "duration": 30,
+        "arrivalRate": 20
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "flow": [
+        { "get": { "url": "/" } },
+        {
+          "post": {
+            "url": "/auth/login",
+            "json": { "email": "alvinlog2002@gmail.com", "password": "1234" },
+            "followRedirect": false
+          }
+        },
+        {
+          "get": {
+            "url": "/hashtag?hashtag=image"
+          }
+        }
+      ]
+    }
+  ]
+}
